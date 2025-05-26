@@ -32,7 +32,7 @@ export default function Home() {
         <div className="flex space-x-2">
           <input
             type="text"
-            className="border px-3 py-2 text-white text-xl rounded"
+            className="border px-3 py-2 text-white rounded"
             placeholder="Nom"
             value={query}
             onChange={e => setQuery(e.target.value)}

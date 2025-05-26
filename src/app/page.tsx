@@ -27,12 +27,12 @@ export default function Home() {
 
       {/* contenu centré */}
       <div className="relative z-10 p-4 text-white flex flex-col items-center space-y-4 bg-pink-300 rounded">
-        <h1 className="text-2xl font-bold text-black">Trouver votre place</h1>
+        <h1 className="text-xl font-bold text-white">CHERCHER VOTRE PLACE</h1>
 
         <div className="flex space-x-2">
           <input
             type="text"
-            className="border px-3 py-2 text-white text-2xl font-bold rounded"
+            className="border px-3 py-2 text-white text-xl rounded"
             placeholder="Nom"
             value={query}
             onChange={e => setQuery(e.target.value)}

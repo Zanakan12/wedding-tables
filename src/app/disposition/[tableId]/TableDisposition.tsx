@@ -73,7 +73,6 @@ export default function TableDisposition({ tableId }: Props) {
         <div className="w-full h-[800px] relative bg-pink-200 rounded shadow overflow-auto p-4">
           {tables.map(t => {
             const pos = positions[t.id];
-            const peopleAtTable = guests.filter(g => g.tableId === t.id);
             const isActive = t.id === table?.id;
 
             return (

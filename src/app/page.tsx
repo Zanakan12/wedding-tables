@@ -18,7 +18,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative flex flex-col items-center min-h-screen overflow-hidden px-4 py-8">
+    <main className="relative flex flex-col items-center min-h-screen overflow-x-hidden px-4 py-8">
       {/* arrière-plan flouté */}
       <div
         className="absolute inset-0 bg-cover bg-center filter blur-md"
@@ -39,7 +39,7 @@ export default function Home() {
           />
           <button
             onClick={handleSearch}
-            className="bg-pink-400 hover:bg-blue-600 px-4 py-2 rounded text-white"
+            className="bg-pink-400 hover:bg-pink-600 px-4 py-2 rounded text-white"
           >
             Rechercher
           </button>

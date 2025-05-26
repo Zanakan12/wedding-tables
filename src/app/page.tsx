@@ -6,6 +6,7 @@ import TablePlan from '@/components/TablePlan';
 import { Guest } from '@/types';
 import { guests } from '@/data/guests';
 import { tables } from '@/data/tables';
+import Link from 'next/link'
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -46,9 +47,17 @@ export default function Home() {
         </div>
 
         {result ? (
-          <p>🪑 {result.name} est à la table {result.tableId}</p>
+        <>
+          <p className="mt-4">🪑 {result.name} est à la table {result.tableId}</p>
+           <Link
+             href={`/disposition/${result.tableId}`}
+             className="mt-2 inline-block bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
+           >
+             Voir la disposition de la table
+           </Link>
+          </>
         ) : query && (
-          <p className="text-red-300">Aucun invité trouvé.</p>
+          <p className="mt-4 text-red-300">Aucun invité trouvé.</p>
         )}
 
         <TablePlan tables={tables} highlightId={result?.tableId} />

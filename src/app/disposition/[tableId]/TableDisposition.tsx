@@ -61,7 +61,7 @@ export default function TableDisposition({ tableId }: Props) {
         style={{ backgroundImage: "url('https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}
       />
 
-      <div className="relative z-10 w-full max-w-5xl bg-white bg-opacity-90 rounded-lg shadow">
+      <div className="relative z-10 w-full max-w-xl bg-white bg-opacity-90 rounded-lg shadow">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">{table?.name || 'Table inconnue'}</h1>
           <Link href="/" className="text-pink-600 hover:underline">← Accueil</Link>
@@ -70,7 +70,7 @@ export default function TableDisposition({ tableId }: Props) {
           {table ? `${people.length} place${people.length > 1 ? 's' : ''}` : ''}
         </p>
 
-        <div className="w-full h-[800px] relative bg-pink-200 rounded shadow overflow-auto p-1">
+        <div className="w-full h-[800px] relative bg-pink-200 rounded shadow overflow-auto">
           {tables.map(t => {
             const pos = positions[t.id];
             const isActive = t.id === table?.id;
@@ -86,7 +86,7 @@ export default function TableDisposition({ tableId }: Props) {
                 `}
                 style={{ left: pos.x, top: pos.y }}
               >
-                <div className="font-bold mb-2 text-base text-center">{t.name}</div>
+                <div className="font-bold mb-2 text-base text-center">{t.name.slice(0,1)+t.name.slice(5)}</div>
               </div>
             );
           })}

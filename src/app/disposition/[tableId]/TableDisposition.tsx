@@ -64,7 +64,7 @@ export default function TableDisposition({ tableId }: Props) {
       <div className="relative z-10 w-full max-w-xl bg-white bg-opacity-90 rounded-lg shadow">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">{table?.name || 'Table inconnue'}</h1>
-          <Link href="/" className="text-pink-600 hover:underline">← Accueil</Link>
+          <Link href="/" className="text-pink-600 hover:underline mr-5">← Accueil</Link>
         </div>
         <p className="text-lg">
           {table ? `${people.length} place${people.length > 1 ? 's' : ''}` : ''}

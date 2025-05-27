@@ -79,8 +79,7 @@ export default function TableDisposition({ tableId }: Props) {
               <div
                 key={t.id}
                 onMouseDown={e => handleDrag(t.id, e)}
-                className={`
-                  absolute cursor-move w-10 h-10 rounded-full flex  items-center justify-center text-sm
+                className={`m-35 absolute cursor-move w-10 h-10 rounded-full flex  items-center justify-center text-sm
                   ${isActive ? 'bg-pink-500 text-white' : 'bg-pink-300'}
                   shadow transition-all duration-150
                 `}

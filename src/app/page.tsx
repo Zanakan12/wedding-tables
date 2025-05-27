@@ -6,7 +6,6 @@ import TablePlan from '@/components/TablePlan';
 import { Guest } from '@/types';
 import { guests } from '@/data/guests';
 import { tables } from '@/data/tables';
-import Link from 'next/link'
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -14,9 +13,20 @@ export default function Home() {
   const bgUrl = 'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
 
   const handleSearch = () => {
-    const guest = guests.find(g => g.name.toLowerCase().includes(query.toLowerCase()));
-    setResult(guest || null);
-  };
+  const guest = guests.find(g => g.name.toLowerCase().includes(query.toLowerCase()));
+  setResult(guest || null);
+
+  // scroll automatique si on trouve l'invité
+  if (guest) {
+    setTimeout(() => {
+      const element = document.getElementById(String(guest.tableId));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100); // petit délai pour s'assurer que la table est rendue
+  }
+};
+
 
   return (
     <main className="relative flex flex-col items-center min-h-screen overflow-x-hidden px-4 py-8">
@@ -49,18 +59,12 @@ export default function Home() {
         {result ? (
         <>
           <p className="mt-4">🪑 {result.name} est à la table {result.tableId}</p>
-           <Link
-             href={`/disposition/${result.tableId}`}
-             className="mt-2 inline-block bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
-           >
-             Voir la disposition de la table
-           </Link>
-          </>
+        </>
         ) : query && (
           <p className="mt-4 text-red-300">Aucun invité trouvé.</p>
         )}
 
-        <TablePlan tables={tables} highlightId={result?.tableId} />
+        <TablePlan tables={tables} highlightId={result?.tableId} result={result}/>
       </div>
     </main>
   );

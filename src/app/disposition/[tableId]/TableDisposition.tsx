@@ -7,16 +7,21 @@ import { tables as initialTables } from '@/data/tables';
 import { guests } from '@/data/guests';
 import { Guest, Table } from '@/types';
 
+
 interface Props {
   tableId: number;
+  tables: (Table & { guests: Guest[] })[];
 }
+
 
 export default function TableDisposition({ tableId }: Props) {
   const router = useRouter();
   const [tables] = useState<Table[]>(initialTables);
-  const [positions, setPositions] = useState(() =>
-    Object.fromEntries(initialTables.map(t => [t.id, { x: t.x, y: t.y }]))
+  const [positions, setPositions] = useState<Record<number, { x: number; y: number }>>(
+    () => Object.fromEntries(initialTables.map(t => [t.id, { x: t.x, y: t.y }]))
   );
+
+
 
   const table = tables.find(t => t.id === tableId) || null;
   const [people, setPeople] = useState<Guest[]>([]);
@@ -38,10 +43,19 @@ export default function TableDisposition({ tableId }: Props) {
     const onMouseMove = (moveEvent: MouseEvent) => {
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
-      setPositions(prev => ({
-        ...prev,
-        [id]: { x: origX + dx, y: origY + dy }
-      }));
+      setPositions(prev => {
+      const newPos = { ...prev, [id]: { x: origX + dx, y: origY + dy } };
+
+      // Envoie à l’API
+      fetch('/api/update-position', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, x: newPos[id].x, y: newPos[id].y }),
+      });
+
+      return newPos;
+    });
+
     };
 
     const onMouseUp = () => {

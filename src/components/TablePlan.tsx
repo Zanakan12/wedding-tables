@@ -1,15 +1,12 @@
 import { Table } from '@/types';
 import { guests } from '@/data/guests';
-import Link from 'next/link';
-import { Guest } from '@/types';
 
 interface Props {
   tables: Table[];
   highlightId?: number;
-  result: Guest | null;
 }
 
-export default function TablePlan({ tables, highlightId, result }: Props) {
+export default function TablePlan({ tables, highlightId }: Props) {
   return (
     <div className="w-full grid
                     grid-cols-1
@@ -33,17 +30,8 @@ export default function TablePlan({ tables, highlightId, result }: Props) {
               shadow
             `}
           >
-            <div id={`${table.id}`} className="font-bold mb-2 text-base">{table.name}</div>
+            <div className="font-bold mb-2 text-base">{table.name}</div>
             {people.map(p => <div key={p.id}>{p.name}</div>)}
-
-            {highlightId === table.id && result && (
-              <Link
-                href={`/disposition/${table.id}`}
-                className="mt-2 inline-block bg-pink-300 hover:bg-pink-600 text-white px-4 py-2 rounded "
-              >
-                Voir la disposition
-              </Link>
-            )}
           </div>
         );
       })}

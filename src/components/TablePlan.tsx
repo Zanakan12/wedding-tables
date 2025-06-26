@@ -22,6 +22,7 @@ export default function TablePlan({ tables, highlightId }: Props) {
         return (
           <div
             key={table.id}
+            id={highlightId === table.id ? `table-${table.id}` : undefined}
             className={`
               w-full h-48 p-4 rounded-lg flex flex-col items-center justify-center text-sm
               ${highlightId === table.id

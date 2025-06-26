@@ -18,8 +18,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (result && tableRef.current) {
-      tableRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (result) {
+      // Délai pour laisser le temps au rendu de se terminer
+      setTimeout(() => {
+        const highlightedTable = document.getElementById(`table-${result.tableId}`);
+        if (highlightedTable) {
+          // Scroll vers la table spécifique mise en évidence
+          highlightedTable.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          });
+        } else if (tableRef.current) {
+          // Fallback vers le conteneur du plan de table
+          tableRef.current.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          });
+        }
+      }, 150);
     }
   }, [result]);
 
@@ -52,7 +70,7 @@ export default function Home() {
         </div>
 
         {result && (<p>🪑 {result.name} est à la table {result.tableId}</p>)}
-            
+
         <div ref={tableRef}>
           <TablePlan tables={tables} highlightId={result?.tableId} />
         </div>

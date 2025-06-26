@@ -1,7 +1,6 @@
-// src/app/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import TablePlan from '@/components/TablePlan';
 import { Guest } from '@/types';
 import { guests } from '@/data/guests';
@@ -10,12 +9,19 @@ import { tables } from '@/data/tables';
 export default function Home() {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<Guest | null>(null);
+  const tableRef = useRef<HTMLDivElement>(null); // Référence au composant TablePlan
   const bgUrl = 'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
 
   const handleSearch = () => {
     const guest = guests.find(g => g.name.toLowerCase().includes(query.toLowerCase()));
     setResult(guest || null);
   };
+
+  useEffect(() => {
+    if (result && tableRef.current) {
+      tableRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [result]);
 
   return (
     <main className="relative flex flex-col items-center min-h-screen overflow-x-hidden px-4 py-8">
@@ -45,13 +51,11 @@ export default function Home() {
           </button>
         </div>
 
-        {result ? (
-          <p>🪑 {result.name} est à la table {result.tableId}</p>
-        ) : query && (
-          <p className="text-red-300">Aucun invité trouvé.</p>
-        )}
-
-        <TablePlan tables={tables} highlightId={result?.tableId} />
+        {result && (<p>🪑 {result.name} est à la table {result.tableId}</p>)}
+            
+        <div ref={tableRef}>
+          <TablePlan tables={tables} highlightId={result?.tableId} />
+        </div>
       </div>
     </main>
   );

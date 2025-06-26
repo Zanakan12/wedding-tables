@@ -15,7 +15,7 @@ export default function TablePlan({ tables, highlightId }: Props) {
                     lg:grid-cols-4
                     xl:grid-cols-5
                     gap-4 p-4
-                    bg-pink-200
+                    bg-white-200
                     rounded shadow overflow-auto">
       {tables.map(table => {
         const people = guests.filter(g => g.tableId === table.id);
@@ -26,8 +26,8 @@ export default function TablePlan({ tables, highlightId }: Props) {
             className={`
               w-full h-48 p-4 rounded-lg flex flex-col items-center justify-center text-sm
               ${highlightId === table.id
-                ? 'bg-pink-500 text-white'
-                : 'bg-pink-300'}
+                ? 'bg-gray-500 text-black'
+                : 'bg-gray-300'}
               shadow
             `}
           >

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Guest, Table } from '@/types';
+import TablePlan from '@/components/TablePlan';
 
 export default function AdminPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -17,6 +18,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'guests' | 'tables'>('guests');
   const [isEditingTable, setIsEditingTable] = useState(false);
   const [editingTable, setEditingTable] = useState<Table | null>(null);
+  const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [tableFormData, setTableFormData] = useState({
     name: '',
     capacity: 8,
@@ -206,12 +208,21 @@ export default function AdminPage() {
   const handleEditTable = (table: Table) => {
     setIsEditingTable(true);
     setEditingTable(table);
+    setSelectedTableId(table.id);
     setTableFormData({
       name: table.name,
       capacity: table.capacity,
       x: table.x,
       y: table.y
     });
+  };
+
+  const handleTableClick = (tableId: number) => {
+    setSelectedTableId(tableId);
+    const table = tables.find(t => t.id === tableId);
+    if (table) {
+      handleEditTable(table);
+    }
   };
 
   const handleDeleteTable = async (tableId: number) => {
@@ -573,6 +584,45 @@ export default function AdminPage() {
                       )}
                     </div>
                   </form>
+                </div>
+
+                {/* Plan de table interactif */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold mb-4">Plan de table</h3>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-4">
+                      Cliquez sur une table pour la sélectionner et la modifier
+                    </p>
+                    
+                    {/* Légende */}
+                    <div className="mb-4 flex flex-wrap gap-4 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-green-100 border-2 border-green-300 rounded"></div>
+                        <span>Disponible</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-yellow-100 border-2 border-yellow-300 rounded"></div>
+                        <span>Complet</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-red-100 border-2 border-red-300 rounded"></div>
+                        <span>Surcharge</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-blue-200 border-2 border-blue-500 rounded"></div>
+                        <span>Sélectionnée</span>
+                      </div>
+                    </div>
+                    
+                    <div className="border rounded-lg overflow-hidden">
+                      <TablePlan 
+                        tables={tables} 
+                        guests={guests}
+                        highlightId={selectedTableId ?? undefined}
+                        onTableClick={handleTableClick}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Liste des tables */}

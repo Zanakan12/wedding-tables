@@ -3,10 +3,11 @@ import { prisma } from '@/lib/db'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const guestId = parseInt(params.id)
+    const { id } = await params
+    const guestId = parseInt(id)
     const { name, tableId } = await request.json()
     
     if (!name || !tableId) {
@@ -39,10 +40,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const guestId = parseInt(params.id)
+    const { id } = await params
+    const guestId = parseInt(id)
     
     await prisma.guest.delete({
       where: { id: guestId }

@@ -3,10 +3,11 @@ import { prisma } from '@/lib/db'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const tableId = parseInt(params.id)
+    const { id } = await params
+    const tableId = parseInt(id)
     const { name, capacity, x, y } = await request.json()
     
     if (!name || !capacity) {
@@ -41,10 +42,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const tableId = parseInt(params.id)
+    const { id } = await params
+    const tableId = parseInt(id)
     
     // Vérifier s'il y a des invités assignés à cette table
     const guestsCount = await prisma.guest.count({

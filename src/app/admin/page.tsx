@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Guest, Table } from '@/types';
 
 export default function AdminPage() {
@@ -297,12 +298,12 @@ export default function AdminPage() {
             </div>
             
             <div className="flex gap-2">
-              <a
+              <Link
                 href="/"
                 className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm"
               >
                 ← Retour au plan de table
-              </a>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm"
@@ -350,14 +351,14 @@ export default function AdminPage() {
                   <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
                     <div className="flex-1 min-w-64">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nom de l'invité
+                        Nom de l&apos;invité
                       </label>
                       <input
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                        placeholder="Nom de l'invité"
+                        placeholder="Nom de l&apos;invité"
                         required
                       />
                     </div>

@@ -3,6 +3,7 @@ export interface Guest {
   id: number;
   name: string;
   tableId: number;
+  table?: Table;
 }
 
 export interface Table {
@@ -10,4 +11,5 @@ export interface Table {
   name: string;
   x: number;
   y: number;
+  guests?: Guest[];
 }

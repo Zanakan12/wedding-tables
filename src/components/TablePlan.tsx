@@ -1,5 +1,4 @@
 import { Table } from '@/types';
-import { guests } from '@/data/guests';
 
 interface Props {
   tables: Table[];
@@ -18,7 +17,7 @@ export default function TablePlan({ tables, highlightId }: Props) {
                     bg-white-200
                     rounded shadow overflow-auto">
       {tables.map(table => {
-        const people = guests.filter(g => g.tableId === table.id);
+        const people = table.guests || [];
         return (
           <div
             key={table.id}

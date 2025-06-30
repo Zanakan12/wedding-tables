@@ -2,15 +2,40 @@
 
 import { useState, useRef, useEffect } from 'react';
 import TablePlan from '@/components/TablePlan';
-import { Guest } from '@/types';
-import { guests } from '@/data/guests';
-import { tables } from '@/data/tables';
+import { Guest, Table } from '@/types';
 
 export default function Home() {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<Guest | null>(null);
-  const tableRef = useRef<HTMLDivElement>(null); // Référence au composant TablePlan
+  const [tables, setTables] = useState<Table[]>([]);
+  const [guests, setGuests] = useState<Guest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const tableRef = useRef<HTMLDivElement>(null);
   const bgUrl = 'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
+
+  // Charger les données depuis l'API
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [tablesRes, guestsRes] = await Promise.all([
+          fetch('/api/tables'),
+          fetch('/api/guests')
+        ]);
+        
+        const tablesData = await tablesRes.json();
+        const guestsData = await guestsRes.json();
+        
+        setTables(tablesData);
+        setGuests(guestsData);
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadData();
+  }, []);
 
   const handleSearch = () => {
     const guest = guests.find(g => g.name.toLowerCase().includes(query.toLowerCase()));
@@ -64,16 +89,23 @@ export default function Home() {
           <button
             onClick={handleSearch}
             className="bg-gray-400 hover:bg-gray-600 px-4 py-2 rounded text-black"
+            disabled={loading}
           >
-            Rechercher
+            {loading ? 'Chargement...' : 'Rechercher'}
           </button>
         </div>
 
         {result && (<p>🪑 {result.name} est à la table {result.tableId}</p>)}
 
-        <div ref={tableRef}>
-          <TablePlan tables={tables} highlightId={result?.tableId} />
-        </div>
+        {loading ? (
+          <div className="text-center py-8">
+            <p>Chargement des tables...</p>
+          </div>
+        ) : (
+          <div ref={tableRef}>
+            <TablePlan tables={tables} highlightId={result?.tableId} />
+          </div>
+        )}
       </div>
     </main>
   );

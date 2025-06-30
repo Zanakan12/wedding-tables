@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Guest, Table } from '@/types';
-import DraggableTablePlan from '@/components/DraggableTablePlan';
+import DraggableTablePlanWithDelete from '@/components/DraggableTablePlanWithDelete';
 
 export default function AdminPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -223,6 +223,10 @@ export default function AdminPage() {
     if (table) {
       handleEditTable(table);
     }
+  };
+
+  const handleGuestDeleteFromPlan = async (guestId: number) => {
+    await handleDelete(guestId);
   };
 
   const handleGuestMove = async (guestId: number, fromTableId: number, toTableId: number) => {
@@ -667,12 +671,13 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="border rounded-lg overflow-hidden">
-                      <DraggableTablePlan 
+                      <DraggableTablePlanWithDelete 
                         tables={tables} 
                         guests={guests}
                         highlightId={selectedTableId ?? undefined}
                         onTableClick={handleTableClick}
                         onGuestMove={handleGuestMove}
+                        onGuestDelete={handleGuestDeleteFromPlan}
                       />
                     </div>
                   </div>

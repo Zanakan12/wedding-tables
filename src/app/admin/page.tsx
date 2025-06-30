@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Guest, Table } from '@/types';
-import TablePlan from '@/components/TablePlan';
+import DraggableTablePlan from '@/components/DraggableTablePlan';
 
 export default function AdminPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -222,6 +222,53 @@ export default function AdminPage() {
     const table = tables.find(t => t.id === tableId);
     if (table) {
       handleEditTable(table);
+    }
+  };
+
+  const handleGuestMove = async (guestId: number, fromTableId: number, toTableId: number) => {
+    if (usingFallback) {
+      alert('Mode hors ligne - Les modifications ne seront pas sauvegardées');
+      return;
+    }
+
+    try {
+      const guest = guests.find(g => g.id === guestId);
+      if (!guest) return;
+
+      const response = await fetch(`/api/guests/${guestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: guest.name,
+          tableId: toTableId
+        }),
+      });
+
+      if (response.ok) {
+        // Mettre à jour localement les données pour un feedback immédiat
+        setGuests(prevGuests => 
+          prevGuests.map(g => 
+            g.id === guestId ? { ...g, tableId: toTableId } : g
+          )
+        );
+        
+        // Recharger les données depuis le serveur pour synchroniser
+        await loadData();
+        
+        const fromTable = tables.find(t => t.id === fromTableId);
+        const toTable = tables.find(t => t.id === toTableId);
+        console.log(`✅ ${guest.name} déplacé de ${fromTable?.name} vers ${toTable?.name}`);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors du déplacement');
+      }
+    } catch (error) {
+      console.error('Erreur lors du déplacement de l\'invité:', error);
+      alert(error instanceof Error ? error.message : 'Erreur lors du déplacement');
+      // Recharger les données en cas d'erreur pour annuler le changement local
+      await loadData();
     }
   };
 
@@ -591,7 +638,8 @@ export default function AdminPage() {
                   <h3 className="text-lg font-semibold mb-4">Plan de table</h3>
                   <div className="bg-white border border-gray-200 rounded-lg p-4">
                     <p className="text-sm text-gray-600 mb-4">
-                      Cliquez sur une table pour la sélectionner et la modifier
+                      <strong>🤏 Drag & Drop :</strong> Glissez-déposez les invités entre les tables<br/>
+                      <strong>👆 Clic :</strong> Cliquez sur une table pour la sélectionner et la modifier
                     </p>
                     
                     {/* Légende */}
@@ -609,17 +657,22 @@ export default function AdminPage() {
                         <span>Surcharge</span>
                       </div>
                       <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-purple-200 border-2 border-purple-500 rounded"></div>
+                        <span>Zone de dépôt</span>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <div className="w-4 h-4 bg-blue-200 border-2 border-blue-500 rounded"></div>
                         <span>Sélectionnée</span>
                       </div>
                     </div>
                     
                     <div className="border rounded-lg overflow-hidden">
-                      <TablePlan 
+                      <DraggableTablePlan 
                         tables={tables} 
                         guests={guests}
                         highlightId={selectedTableId ?? undefined}
                         onTableClick={handleTableClick}
+                        onGuestMove={handleGuestMove}
                       />
                     </div>
                   </div>

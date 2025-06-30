@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import TablePlan from '@/components/TablePlan';
 import { Guest, Table } from '@/types';
+// Fallback vers les données statiques
+import { guests as staticGuests } from '@/data/guests';
+import { tables as staticTables } from '@/data/tables';
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -10,10 +13,11 @@ export default function Home() {
   const [tables, setTables] = useState<Table[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usingFallback, setUsingFallback] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
   const bgUrl = 'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
 
-  // Charger les données depuis l'API
+  // Charger les données depuis l'API avec fallback
   useEffect(() => {
     async function loadData() {
       try {
@@ -22,13 +26,26 @@ export default function Home() {
           fetch('/api/guests')
         ]);
         
-        const tablesData = await tablesRes.json();
-        const guestsData = await guestsRes.json();
-        
-        setTables(tablesData);
-        setGuests(guestsData);
+        if (tablesRes.ok && guestsRes.ok) {
+          const tablesData = await tablesRes.json();
+          const guestsData = await guestsRes.json();
+          
+          // Vérifier que les données sont des tableaux
+          if (Array.isArray(tablesData) && Array.isArray(guestsData)) {
+            setTables(tablesData);
+            setGuests(guestsData);
+          } else {
+            throw new Error('Les données de l\'API ne sont pas au bon format');
+          }
+        } else {
+          throw new Error('Erreur HTTP lors de la récupération des données');
+        }
       } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
+        console.error('Erreur lors du chargement des données depuis l\'API, utilisation des données statiques:', error);
+        // Fallback vers les données statiques
+        setTables(staticTables);
+        setGuests(staticGuests);
+        setUsingFallback(true);
       } finally {
         setLoading(false);
       }
@@ -77,6 +94,12 @@ export default function Home() {
       {/* contenu centré */}
       <div className="relative z-10 p-4 text-black flex flex-col items-center space-y-4 bg-gray-100 rounded">
         <h1 className="text-xl font-bold text-black">CHERCHER VOTRE PLACE</h1>
+
+        {usingFallback && (
+          <div className="text-xs text-gray-600 bg-yellow-100 px-2 py-1 rounded">
+            Mode hors ligne - Données statiques
+          </div>
+        )}
 
         <div className="flex space-x-2">
           <input

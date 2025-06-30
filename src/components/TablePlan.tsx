@@ -1,4 +1,5 @@
-import { Table } from '@/types';
+import { Table, Guest } from '@/types';
+import { guests } from '@/data/guests';
 
 interface Props {
   tables: Table[];
@@ -17,7 +18,9 @@ export default function TablePlan({ tables, highlightId }: Props) {
                     bg-white-200
                     rounded shadow overflow-auto">
       {tables.map(table => {
-        const people = table.guests || [];
+        // Si la table a des invités inclus (depuis l'API), les utiliser
+        // Sinon, filtrer depuis les données statiques
+        const people = table.guests || guests.filter((g: Guest) => g.tableId === table.id);
         return (
           <div
             key={table.id}
@@ -31,7 +34,7 @@ export default function TablePlan({ tables, highlightId }: Props) {
             `}
           >
             <div className="font-bold mb-2 text-base">{table.name}</div>
-            {people.map(p => <div key={p.id}>{p.name}</div>)}
+            {people.map((p: Guest) => <div key={p.id}>{p.name}</div>)}
           </div>
         );
       })}

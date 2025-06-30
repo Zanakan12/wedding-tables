@@ -4,30 +4,29 @@ const prisma = new PrismaClient();
 
 // Données des tables (migration depuis tables.ts)
 const tablesData = Array.from({ length: 24 }, (_, i) => ({
-  id: i + 1,
   name: `Table ${i + 1}`,
   x: (i % 5) * 120 + 50,
   y: Math.floor(i / 5) * 120 + 50,
 }));
 
-// Données des invités (migration depuis guests.ts)
+// Données des invités (migration depuis guests.ts) - sans l'ID pour laisser l'auto-increment
 const guestsData = [
-  { id: 1, name: "Margaux", tableId: 1 },
-  { id: 2, name: "Nathan", tableId: 1 },
-  { id: 3, name: "Manon", tableId: 1 },
-  { id: 4, name: "Pauline", tableId: 1 },
-  { id: 5, name: "Sarah", tableId: 1 },
-  { id: 6, name: "Eunice", tableId: 1 },
-  { id: 7, name: "Benly", tableId: 1 },
-  { id: 8, name: "Denise", tableId: 1 },
-  { id: 9, name: "Santos", tableId: 2 },
-  { id: 10, name: "Mamie", tableId: 2 },
-  { id: 11, name: "Teccy", tableId: 2 },
-  { id: 12, name: "Mailine", tableId: 2 },
-  { id: 13, name: "Maria", tableId: 2 },
-  { id: 14, name: "Fanny", tableId: 2 },
-  { id: 15, name: "Mari fanny", tableId: 2 },
-  { id: 16, name: "Papa teccy", tableId: 2 },
+  { name: "Margaux", tableId: 1 },
+  { name: "Nathan", tableId: 1 },
+  { name: "Manon", tableId: 1 },
+  { name: "Pauline", tableId: 1 },
+  { name: "Sarah", tableId: 1 },
+  { name: "Eunice", tableId: 1 },
+  { name: "Benly", tableId: 1 },
+  { name: "Denise", tableId: 1 },
+  { name: "Santos", tableId: 2 },
+  { name: "Mamie", tableId: 2 },
+  { name: "Teccy", tableId: 2 },
+  { name: "Mailine", tableId: 2 },
+  { name: "Maria", tableId: 2 },
+  { name: "Fanny", tableId: 2 },
+  { name: "Mari fanny", tableId: 2 },
+  { name: "Papa teccy", tableId: 2 },
   { id: 17, name: "Jafait", tableId: 3 },
   { id: 18, name: "Naomi", tableId: 3 },
   { id: 19, name: "Betty", tableId: 3 },

@@ -107,6 +107,16 @@ export default function Home() {
           </div>
         )}
 
+        {/* Lien vers l'administration */}
+        <div className="w-full flex justify-end">
+          <a
+            href="/admin"
+            className="text-xs text-gray-500 hover:text-gray-700 underline"
+          >
+            Administration
+          </a>
+        </div>
+
         <div className="flex space-x-2">
           <input
             type="text"

@@ -101,6 +101,12 @@ export default function Home() {
           </div>
         )}
 
+        {!usingFallback && !loading && (
+          <div className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+            ✅ Connecté à la base de données
+          </div>
+        )}
+
         <div className="flex space-x-2">
           <input
             type="text"

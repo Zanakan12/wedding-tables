@@ -11,11 +11,12 @@ datasource db {
 }
 
 model Table {
-  id     Int     @id @default(autoincrement())
-  name   String
-  x      Float
-  y      Float
-  guests Guest[]
+  id       Int     @id @default(autoincrement())
+  name     String
+  capacity Int     @default(8)
+  x        Float
+  y        Float
+  guests   Guest[]
 
   @@map("tables")
 }

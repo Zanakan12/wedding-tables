@@ -110,7 +110,7 @@ export default function Home() {
         {/* Lien vers l'administration */}
         <div className="w-full flex justify-end">
           <a
-            href="/admin"
+            href="/admin/login"
             className="text-xs text-gray-500 hover:text-gray-700 underline"
           >
             Administration

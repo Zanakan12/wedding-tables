@@ -9,6 +9,7 @@ export interface Guest {
 export interface Table {
   id: number;
   name: string;
+  capacity: number;
   x: number;
   y: number;
   guests?: Guest[];

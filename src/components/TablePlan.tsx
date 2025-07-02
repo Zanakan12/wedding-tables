@@ -5,10 +5,11 @@ interface Props {
   tables: Table[];
   guests?: Guest[];
   highlightId?: number;
+  highlightIds?: number[];
   onTableClick?: (tableId: number) => void;
 }
 
-export default function TablePlan({ tables, guests: guestsProps, highlightId, onTableClick }: Props) {
+export default function TablePlan({ tables, guests: guestsProps, highlightId, highlightIds, onTableClick }: Props) {
   return (
     <div className="w-full grid
                     grid-cols-1
@@ -28,16 +29,19 @@ export default function TablePlan({ tables, guests: guestsProps, highlightId, on
         const isOverCapacity = occupancy > capacity;
         const isFull = occupancy === capacity;
         
+        // Vérifier si cette table doit être mise en surbrillance
+        const isHighlighted = highlightId === table.id || (highlightIds && highlightIds.includes(table.id));
+        
         return (
           <div
             key={table.id}
-            id={highlightId === table.id ? `table-${table.id}` : undefined}
+            id={isHighlighted ? `table-${table.id}` : undefined}
             onClick={() => onTableClick?.(table.id)}
             className={`
               w-full h-48 p-4 rounded-lg flex flex-col items-center justify-center text-sm
               ${onTableClick ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}
-              ${highlightId === table.id
-                ? 'bg-blue-200 border-2 border-blue-500 text-black'
+              ${isHighlighted
+                ? 'bg-blue-200 border-2 border-blue-500 text-black animate-pulse'
                 : isOverCapacity 
                   ? 'bg-red-100 border-2 border-red-300'
                   : isFull

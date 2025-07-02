@@ -35,3 +35,20 @@ export async function findGuestByName(name: string) {
     }
   })
 }
+
+export async function findGuestsByName(name: string) {
+  return await prisma.guest.findMany({
+    where: {
+      name: {
+        contains: name,
+        mode: 'insensitive'
+      }
+    },
+    include: {
+      table: true
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  })
+}

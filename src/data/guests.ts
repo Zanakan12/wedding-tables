@@ -15,6 +15,10 @@ export const guests = [
   { id: 14, name: 'Fanny', tableId: 2 },
   { id: 15, name: 'Mari fanny', tableId: 2 },
   { id: 16, name: 'Papa teccy', tableId: 2 },
+  // Ajout de quelques Marie pour tester
+  { id: 200, name: 'Marie Dupont', tableId: 3 },
+  { id: 201, name: 'Marie-Claire Martin', tableId: 5 },
+  { id: 202, name: 'Marie Jeanne', tableId: 7 },
   { id: 17, name: 'Jafait', tableId: 3 },
   { id: 18, name: 'Naomi', tableId: 3 },
   { id: 19, name: 'Betty', tableId: 3 },

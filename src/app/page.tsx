@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import TablePlan from '@/components/TablePlan';
 import { Guest, Table } from '@/types';
 // Fallback vers les données statiques
@@ -9,11 +9,13 @@ import { tables as staticTables } from '@/data/tables';
 
 export default function Home() {
   const [query, setQuery] = useState('');
-  const [result, setResult] = useState<Guest | null>(null);
+  const [results, setResults] = useState<Guest[]>([]);
+  const [searching, setSearching] = useState(false);
   const [tables, setTables] = useState<Table[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [highlightedTableIds, setHighlightedTableIds] = useState<number[]>([]);
   const tableRef = useRef<HTMLDivElement>(null);
   const bgUrl = 'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
 
@@ -54,18 +56,55 @@ export default function Home() {
     loadData();
   }, []);
 
-  const handleSearch = () => {
-    const guest = guests.find(g => g.name.toLowerCase().includes(query.toLowerCase()));
-    setResult(guest || null);
-  };
+  const handleSearch = useCallback(async () => {
+    if (!query.trim()) {
+      setResults([]);
+      setHighlightedTableIds([]);
+      return;
+    }
+
+    setSearching(true);
+    
+    try {
+      if (usingFallback) {
+        // Recherche locale si on utilise les données statiques
+        const foundGuests = guests.filter(g => 
+          g.name.toLowerCase().includes(query.toLowerCase())
+        );
+        setResults(foundGuests);
+        setHighlightedTableIds(foundGuests.map(g => g.tableId));
+      } else {
+        // Recherche via l'API
+        const response = await fetch(`/api/search?name=${encodeURIComponent(query)}`);
+        if (response.ok) {
+          const foundGuests = await response.json();
+          setResults(Array.isArray(foundGuests) ? foundGuests : []);
+          setHighlightedTableIds(foundGuests.map((g: Guest) => g.tableId));
+        } else {
+          throw new Error('Erreur lors de la recherche');
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la recherche:', error);
+      // Fallback vers la recherche locale
+      const foundGuests = guests.filter(g => 
+        g.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setResults(foundGuests);
+      setHighlightedTableIds(foundGuests.map(g => g.tableId));
+    } finally {
+      setSearching(false);
+    }
+  }, [query, usingFallback, guests]);
 
   useEffect(() => {
-    if (result) {
+    if (results.length > 0) {
       // Délai pour laisser le temps au rendu de se terminer
       setTimeout(() => {
-        const highlightedTable = document.getElementById(`table-${result.tableId}`);
+        // Scroll vers la première table trouvée
+        const firstTableId = results[0].tableId;
+        const highlightedTable = document.getElementById(`table-${firstTableId}`);
         if (highlightedTable) {
-          // Scroll vers la table spécifique mise en évidence
           highlightedTable.scrollIntoView({ 
             behavior: 'smooth',
             block: 'center',
@@ -81,7 +120,21 @@ export default function Home() {
         }
       }, 150);
     }
-  }, [result]);
+  }, [results]);
+
+  // Effet pour déclencher la recherche automatiquement avec debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (query.trim()) {
+        handleSearch();
+      } else {
+        setResults([]);
+        setHighlightedTableIds([]);
+      }
+    }, 500); // Attendre 500ms après la dernière frappe
+
+    return () => clearTimeout(timeoutId);
+  }, [query, handleSearch]); // Se déclenche quand query change
 
   return (
     <main className="relative flex flex-col items-center min-h-screen overflow-x-hidden px-4 py-8">
@@ -117,24 +170,67 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 w-full max-w-md">
           <input
             type="text"
-            className="border px-3 py-2 text-black rounded"
-            placeholder="Nom"
+            className="border px-3 py-2 text-black rounded flex-1"
+            placeholder="Chercher une personne (ex: Marie)"
             value={query}
             onChange={e => setQuery(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && handleSearch()}
           />
           <button
             onClick={handleSearch}
             className="bg-gray-400 hover:bg-gray-600 px-4 py-2 rounded text-black"
-            disabled={loading}
+            disabled={loading || searching}
           >
-            {loading ? 'Chargement...' : 'Rechercher'}
+            {searching ? 'Recherche...' : loading ? 'Chargement...' : 'Rechercher'}
           </button>
         </div>
 
-        {result && (<p>🪑 {result.name} est à la table {result.tableId}</p>)}
+        {/* Bouton pour effacer la recherche */}
+        {results.length > 0 && (
+          <button
+            onClick={() => {
+              setResults([]);
+              setQuery('');
+              setHighlightedTableIds([]);
+            }}
+            className="text-sm text-gray-500 hover:text-gray-700 underline"
+          >
+            Effacer la recherche
+          </button>
+        )}
+
+        {/* Affichage des résultats */}
+        {results.length > 0 && (
+          <div className="w-full max-w-md space-y-2">
+            <h2 className="font-semibold text-lg">
+              {results.length} résultat{results.length > 1 ? 's' : ''} trouvé{results.length > 1 ? 's' : ''} :
+            </h2>
+            <div className="bg-white border rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
+              {results.map((guest) => {
+                const table = tables.find(t => t.id === guest.tableId);
+                return (
+                  <div key={guest.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                    <span className="font-medium">🧑‍🤝‍🧑 {guest.name}</span>
+                    <span className="text-sm text-gray-600">
+                      🪑 Table {table?.name || guest.tableId}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Message si aucun résultat */}
+        {query && !searching && results.length === 0 && (
+          <div className="text-center py-4 text-gray-600">
+            <p>😔 Aucune personne trouvée pour &ldquo;{query}&rdquo;</p>
+            <p className="text-sm">Essayez avec un prénom ou nom différent</p>
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center py-8">
@@ -142,7 +238,7 @@ export default function Home() {
           </div>
         ) : (
           <div ref={tableRef}>
-            <TablePlan tables={tables} highlightId={result?.tableId} />
+            <TablePlan tables={tables} highlightIds={highlightedTableIds} />
           </div>
         )}
       </div>

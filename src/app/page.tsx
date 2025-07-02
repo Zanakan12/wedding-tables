@@ -98,12 +98,13 @@ export default function Home() {
   }, [query, usingFallback, guests]);
 
   useEffect(() => {
-    if (results.length > 0) {
+    // Scroll automatique seulement s'il y a exactement UN résultat
+    if (results.length === 1) {
       // Délai pour laisser le temps au rendu de se terminer
       setTimeout(() => {
-        // Scroll vers la première table trouvée
-        const firstTableId = results[0].tableId;
-        const highlightedTable = document.getElementById(`table-${firstTableId}`);
+        // Scroll vers la table du résultat unique
+        const tableId = results[0].tableId;
+        const highlightedTable = document.getElementById(`table-${tableId}`);
         if (highlightedTable) {
           highlightedTable.scrollIntoView({ 
             behavior: 'smooth',
@@ -120,6 +121,7 @@ export default function Home() {
         }
       }, 150);
     }
+    // Pas de scroll automatique si plusieurs résultats (results.length > 1)
   }, [results]);
 
   // Effet pour déclencher la recherche automatiquement avec debounce
@@ -213,14 +215,41 @@ export default function Home() {
                 const table = tables.find(t => t.id === guest.tableId);
                 return (
                   <div key={guest.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <span className="font-medium">🧑‍🤝‍🧑 {guest.name}</span>
-                    <span className="text-sm text-gray-600">
-                      🪑 Table {table?.name || guest.tableId}
-                    </span>
+                    <div className="flex-1">
+                      <span className="font-medium">🧑‍🤝‍🧑 {guest.name}</span>
+                      <div className="text-sm text-gray-600">
+                        🪑 Table {table?.name || guest.tableId}
+                      </div>
+                    </div>
+                    {/* Bouton pour aller à la table (seulement si plusieurs résultats) */}
+                    {results.length > 1 && (
+                      <button
+                        onClick={() => {
+                          const targetTable = document.getElementById(`table-${guest.tableId}`);
+                          if (targetTable) {
+                            targetTable.scrollIntoView({ 
+                              behavior: 'smooth',
+                              block: 'center',
+                              inline: 'center'
+                            });
+                          }
+                        }}
+                        className="ml-2 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        title="Aller à cette table"
+                      >
+                        👁️ Voir
+                      </button>
+                    )}
                   </div>
                 );
               })}
             </div>
+            {/* Message informatif si plusieurs résultats */}
+            {results.length > 1 && (
+              <p className="text-xs text-gray-500 text-center">
+                💡 Cliquez sur &ldquo;👁️ Voir&rdquo; pour aller à une table spécifique
+              </p>
+            )}
           </div>
         )}
 

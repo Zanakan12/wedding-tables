@@ -122,7 +122,7 @@ function DroppableTable({
       ref={setNodeRef}
       onClick={() => onTableClick(table.id)}
       className={`
-        w-full h-48 p-3 rounded-lg flex flex-col items-center text-sm
+        w-full p-3 rounded-lg flex flex-col items-center text-sm
         transition-all duration-200 ease-in-out relative
         cursor-pointer hover:shadow-lg
         ${isHighlighted

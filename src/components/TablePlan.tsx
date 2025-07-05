@@ -38,7 +38,7 @@ export default function TablePlan({ tables, guests: guestsProps, highlightId, hi
             id={isHighlighted ? `table-${table.id}` : undefined}
             onClick={() => onTableClick?.(table.id)}
             className={`
-              w-full h-48 p-4 rounded-lg flex flex-col items-center justify-center text-sm
+              w-full p-4 rounded-lg flex flex-col items-center justify-center text-sm
               ${onTableClick ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}
               ${isHighlighted
                 ? 'bg-blue-200 border-2 border-blue-500 text-black animate-pulse'
